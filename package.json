@@ -20,6 +20,7 @@
     "@ionic/vue-router": "^5.4.0",
     "cordova-plugin-geofence": "^0.7.0",
     "core-js": "^3.6.5",
+    "es6-promise-plugin": "^4.2.2",
     "vue": "^3.0.0-0",
     "vue-router": "^4.0.0-0"
   },

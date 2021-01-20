@@ -10,12 +10,16 @@
 			<div id="container">
 				<p>{{ locationData }}</p>
 				<p>{{ notificationsPending }}</p>
+				<p>{{ notifs }}</p>
 
 				<ion-button size="small" @click="getLocation()"
 					>get location</ion-button
 				>
 				<ion-button size="small" @click="scheduleNotif()"
 					>schedule notification</ion-button
+				>
+				<ion-button size="small" @click="startGeofence()"
+					>geofence?</ion-button
 				>
 			</div>
 		</ion-content>
@@ -33,6 +37,7 @@ import {
 } from '@ionic/vue'
 import { ref } from 'vue'
 import { Plugins } from '@capacitor/core'
+import { Geofence } from '@ionic-native/geofence';
 
 export default {
 	name: 'Home',
@@ -47,9 +52,15 @@ export default {
 	setup() {
 		const locationData = ref({})
 		const notificationsPending = ref({})
-		const isOpenRef = ref(false)
-
-		const setOpen = (state) => (isOpenRef.value = state)
+		const notifs = ref({})
+		
+		const startGeofence =  () => {
+			Geofence.initialize().then(
+			() => console.log('Geofence Plugin Ready'),
+			(err) => console.log(err)
+  )
+			console.warn(Geofence)
+		}
 
 		const getLocation = async () => {
 			const { Geolocation } = Plugins
@@ -59,9 +70,10 @@ export default {
 				long: results.coords.longitude,
 			}
 		}
+
 		const scheduleNotif = async () => {
 			const { LocalNotifications } = Plugins
-			const notifs = await LocalNotifications.schedule({
+			notifs.value = await LocalNotifications.schedule({
 				notifications: [
 					{
 						title: 'Title',
@@ -75,12 +87,10 @@ export default {
 					},
 				],
 			})
-			console.log('scheduled notifications', notifs)
 			const pending = await LocalNotifications.getPending()
 			console.warn(pending)
 			notificationsPending.value = pending
 			console.warn(notificationsPending)
-			setOpen(true)
 		}
 
 		return {
@@ -88,8 +98,8 @@ export default {
 			getLocation,
 			scheduleNotif,
 			notificationsPending,
-			isOpenRef,
-			setOpen,
+			notifs,
+			startGeofence
 		}
 	},
 	mounted() {},
